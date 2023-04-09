@@ -222,7 +222,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }} 
         
-    - name: 'Set private registry authentication settings'
+    - name: 'Set private registry authentication settings.'
       run: az webapp config container set --name ${{ vars.WEBAPP }} --resource-group ${{ vars.RESOURCEGROUP }} --docker-registry-server-user ${{ secrets.ACR_USERNAME }} --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
       
     - uses: azure/webapps-deploy@v2
