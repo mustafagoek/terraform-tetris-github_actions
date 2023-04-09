@@ -16,10 +16,10 @@ permissions:
 
 #These environment variables are used by the terraform azure provider to setup OIDD authenticate. 
 env:
-  client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
-  enable-AzPSSession: true
+  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+  ARM_CLIENT_SECRET: "${{ secrets.AZURE_CLIENT_SECRET }}"
 
 jobs:
   terraform-plan:
@@ -64,6 +64,7 @@ jobs:
       run: |
         export exitcode=0
         terraform plan -lock=false -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+
         echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
         
         if [ $exitcode -eq 1 ]; then
@@ -220,9 +221,9 @@ jobs:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }} 
+        creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }} 
         
-    - name: 'Set private registry authentication settings.'
+    - name: 'Set private registry authentication settings'
       run: az webapp config container set --name ${{ vars.WEBAPP }} --resource-group ${{ vars.RESOURCEGROUP }} --docker-registry-server-user ${{ secrets.ACR_USERNAME }} --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
       
     - uses: azure/webapps-deploy@v2
