@@ -220,7 +220,7 @@ jobs:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }} 
+        creds: ${{ secrets.AZURE_CREDENTIALS }} 
         
     - name: 'Set private registry authentication settings.'
       run: az webapp config container set --name ${{ vars.WEBAPP }} --resource-group ${{ vars.RESOURCEGROUP }} --docker-registry-server-user ${{ secrets.ACR_USERNAME }} --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
