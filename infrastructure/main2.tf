@@ -18,8 +18,8 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "sshkey"
-    storage_account_name = "ccseyhan"
+    resource_group_name  = "gokmus-dev"
+    storage_account_name = "storagegokmus"
     container_name       = "tetris-githubaction-backend"
     key                  = "terraform.tfstate"
   }
