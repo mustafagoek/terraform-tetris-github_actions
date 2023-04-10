@@ -1,43 +1,43 @@
+provider "azurerm" {
+  features {}
+}
+
+provider "github" {
+}
+
+
 terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.51.0"
+      version = "3.50.0"
     }
-
     github = {
       source  = "integrations/github"
-      version = "5.21.1"
+      version = "5.20.0"
     }
   }
   backend "azurerm" {
-    resource_group_name  = "gokmus-dev"
-    storage_account_name = "storagegokmus"
+    resource_group_name  = "sshkey"
+    storage_account_name = "ccseyhan"
     container_name       = "tetris-githubaction-backend"
     key                  = "terraform.tfstate"
   }
-}
-
-provider "azurerm" {
-  features {
-  }
-}
-provider "github" {
-
 }
 
 resource "azurerm_resource_group" "rg1" {
   name     = var.rg_name
   location = var.location
 }
+
 resource "azurerm_container_registry" "acr" {
   name                = var.acr_name
   resource_group_name = azurerm_resource_group.rg1.name
   location            = var.location
   sku                 = var.acr_sku
   admin_enabled       = true
-
 }
+
 resource "azurerm_service_plan" "asp" {
   name                = var.app_service_plan_name
   resource_group_name = azurerm_resource_group.rg1.name
@@ -54,18 +54,24 @@ resource "azurerm_linux_web_app" "app1" {
 
   site_config {}
 }
-resource "github_actions_secret" "acr_password" {
+
+resource "github_actions_environment_secret" "acr_password" {
   repository      = var.github_repo_name
+  environment     = "acr_env"
   secret_name     = "ACR_PASSWORD"
   plaintext_value = azurerm_container_registry.acr.admin_password
 }
-resource "github_actions_variable" "webapp_name" {
+
+resource "github_actions_environment_variable" "github_env_rg" {
   repository    = var.github_repo_name
-  variable_name = "WEBAPP"
-  value         = azurerm_linux_web_app.app1.name
-}
-resource "github_actions_variable" "rg_name" {
-  repository    = var.github_repo_name
+  environment   = "acr_env"
   variable_name = "RESOURCEGROUP"
   value         = azurerm_resource_group.rg1.name
+}
+
+resource "github_actions_environment_variable" "github_env_webapp" {
+  repository    = var.github_repo_name
+  environment   = "acr_env"
+  variable_name = "WEBAPP"
+  value         = azurerm_linux_web_app.app1.name
 }
